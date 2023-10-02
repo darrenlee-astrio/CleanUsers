@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Temporary Sqlite Files
 *.db-shm
 *.db-wal
+*.pptx
