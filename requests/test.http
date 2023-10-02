@@ -1,0 +1,14 @@
+﻿@host=https://reqres.in
+
+### GET
+GET {{host}}/api/users?page=2
+Content-Type: application/json
+
+
+### POST
+POST {{host}}/api/users
+Content-Type: application/json
+{
+    "name": "morpheus",
+    "job": "leader"
+}
