@@ -12,6 +12,7 @@ This is similar to [Users API](https://github.com/darrenleeyx/Users) but with ad
 
 ## Projects
 Architecture of CleanUsers API
+![CleanUsers API Architecture](https://github.com/darrenleeyx/CleanUsers/assets/59044608/6d3bf2a2-9442-4ff1-ac5e-7eb5b1d3c64a)
 
 1. src/CleanUsers.Api
 2. src/CleanUsers.Api.Contracts
