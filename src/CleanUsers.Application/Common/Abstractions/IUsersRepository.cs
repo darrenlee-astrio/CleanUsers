@@ -1,6 +1,6 @@
 ﻿using CleanUsers.Domain.Users;
 
-namespace CleanUsers.Application.Abstractions;
+namespace CleanUsers.Application.Common.Abstractions;
 
 public interface IUsersRepository
 {

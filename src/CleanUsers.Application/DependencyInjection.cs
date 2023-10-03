@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CleanUsers.Application.Common.Behaviors;
+using FluentValidation;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace CleanUsers.Application;
 
@@ -10,6 +14,9 @@ public static class DependencyInjection
         {
             options.RegisterServicesFromAssemblyContaining(typeof(DependencyInjection));
         });
+
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         return services;
     }

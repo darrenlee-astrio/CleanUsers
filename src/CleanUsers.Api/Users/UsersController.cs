@@ -22,7 +22,7 @@ public class UsersController : ApiController
     [SwaggerOperation("Gets a user by id")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(UserResponse))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public IActionResult GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         return Ok();
     }
@@ -30,7 +30,7 @@ public class UsersController : ApiController
     [HttpGet(ApiEndpoints.Users.GetAll)]
     [SwaggerOperation("Gets all users")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(UsersResponse))]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    public IActionResult GetAll(CancellationToken cancellationToken = default)
     {
         return Ok();
     }
@@ -68,7 +68,7 @@ public class UsersController : ApiController
     [SwaggerOperation("Deletes a user")]
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ValidationProblemDetails))]
-    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public IActionResult Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         return Ok();
     }

@@ -1,4 +1,4 @@
-﻿using CleanUsers.Application.Abstractions;
+﻿using CleanUsers.Application.Common.Abstractions;
 using CleanUsers.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

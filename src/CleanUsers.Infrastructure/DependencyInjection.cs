@@ -1,4 +1,4 @@
-﻿using CleanUsers.Application.Abstractions;
+﻿using CleanUsers.Application.Common.Abstractions;
 using CleanUsers.Infrastructure.Common.Persistence;
 using CleanUsers.Infrastructure.Users.Persistence;
 using Microsoft.EntityFrameworkCore;
