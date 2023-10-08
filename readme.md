@@ -7,7 +7,7 @@ This repository is currently a work in progress where I can consolidate my learn
 This is similar to [Users API](https://github.com/darrenleeyx/Users) but with additional architectural and design patterns such as
 1. Clean Architecture
 2. CQRS (Command Query Responsibility Segregation)
-3. Unit of Work & Repository Pattern with EntityFrameworkCore (Sqlite)
+3. Unit of Work & Repository Pattern with EntityFrameworkCore (SqlServer)
 4. Results Pattern
 
 ## Projects
@@ -31,7 +31,7 @@ Architecture of CleanUsers API
 PM> Add-Migration InitialCreate -p CleanUsers.Infrastructure -s CleanUsers.Api
 ```
 
-* Update Database
+* Update Database (Ensure that a valid connection string exists in appsettings.json)
 ```console
 PM> Update-Database
 ```

@@ -10,7 +10,7 @@ public class User
     public UserType UserType { get; init; } = null!;
     public DateTime DateJoined { get; init; }
 
-    private User() { }
+    public User() { }
 
     public User(
         string username,

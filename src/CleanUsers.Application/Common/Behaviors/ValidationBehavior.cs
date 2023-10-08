@@ -27,16 +27,18 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             return await next();
         }
 
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-
-        if (validationResult.IsValid)
+        try
         {
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+
             return await next();
         }
-
-        return TryCreateResponseFromErrors(validationResult.Errors, out var response)
+        catch (ValidationException ex)
+        {
+            return TryCreateResponseFromErrors(ex.Errors.ToList(), out var response)
             ? response
-            : throw new ValidationException(validationResult.Errors);
+            : throw new ValidationException(ex.Errors);
+        }
     }
 
     private static bool TryCreateResponseFromErrors(List<ValidationFailure> validationFailures, out TResponse response)

@@ -1,7 +1,10 @@
 ﻿using CleanUsers.Application.Common.Abstractions;
+using CleanUsers.Application.Users.Queries.GetAllUsers;
 using CleanUsers.Domain.Users;
+using CleanUsers.Infrastructure.Common.Models;
 using CleanUsers.Infrastructure.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
+using DomainModels = CleanUsers.Domain.Common.Models;
 
 namespace CleanUsers.Infrastructure.Users.Persistence;
 
@@ -33,11 +36,39 @@ public class UsersRepository : IUsersRepository
         await _dbContext.Users.AddAsync(user, cancellationToken);
     }
 
-    public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<DomainModels.PaginatedList<User>> GetAllAsync(GetAllUsersOptions options, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Users
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var users = _dbContext.Users.AsQueryable();
+
+        users = options.Username is null ? users :
+            users.Where(u => u.Username.Contains(options.Username));
+
+        users = options.Name is null ? users :
+            users.Where(u => u.Name.Contains(options.Name));
+
+        users = options.UserType is null ? users :
+            users.Where(u => u.UserType == options.UserType);
+
+        users = options.DateJoined is null ? users :
+            users.Where(u => u.DateJoined.Date == options.DateJoined.GetValueOrDefault().Date);
+
+        var sortField = options.SortField is not null &&
+            options.SortField.Equals("DateJoined", StringComparison.OrdinalIgnoreCase) ?
+            "DateJoined" : null;
+
+        users = sortField is null ? users :
+            options.SortOrder == Application.Common.Enums.SortOrder.Descending ?
+                users.OrderByDescending(u => EF.Property<object>(u, sortField)) :
+                users.OrderBy(u => EF.Property<object>(u, sortField));
+
+        var result = await PaginatedList<User>.CreateAsync(
+            users.AsNoTracking(),
+            options.Page,
+            options.PageSize,
+            cancellationToken);
+
+        return new DomainModels.PaginatedList<User>(
+            result, result.PageIndex, result.TotalPages);
     }
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

@@ -1,7 +1,7 @@
 ﻿using CleanUsers.Api.Common.Constants;
 using CleanUsers.Api.Common.Controllers;
 using CleanUsers.Api.Contracts.Users;
-using CleanUsers.Application.Users.Commands.CreateUser;
+using CleanUsers.Application.Users.Queries.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,17 +22,31 @@ public class UsersController : ApiController
     [SwaggerOperation("Gets a user by id")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(UserResponse))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        return Ok();
+        var command = new GetUserQuery(id);
+        var result = await _mediator.Send(command);
+
+        return result.Match(Ok, Problem);
     }
 
     [HttpGet(ApiEndpoints.Users.GetAll)]
     [SwaggerOperation("Gets all users")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(UsersResponse))]
-    public IActionResult GetAll(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllUsersRequest request, CancellationToken cancellationToken = default)
     {
-        return Ok();
+        DomainUserType? userType = null;
+        if (request.UserType is not null && !DomainUserType.TryFromName(request.UserType.ToString(), out userType))
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: "Invalid user type");
+        }
+
+        var command = request.ToCommand(userType);
+        var result = await _mediator.Send(command);
+
+        return result.Match(Ok, Problem);
     }
 
     [HttpPost(ApiEndpoints.Users.Create)]
@@ -48,13 +62,7 @@ public class UsersController : ApiController
                 detail: "Invalid user type");
         }
 
-        var command = new CreateUserCommand(
-            Username: request.Username,
-            Name: request.Name,
-            Email: request.Email,
-            Phone: request.Phone,
-            UserType: userType);
-
+        var command = request.ToCommand(userType);
         var result = await _mediator.Send(command);
 
         return result.Match(
