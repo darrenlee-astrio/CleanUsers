@@ -1,8 +1,7 @@
-﻿using ErrorOr;
+﻿using CleanUsers.Application.Common.Helpers;
+using ErrorOr;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
-using System.Reflection;
 
 namespace CleanUsers.Application.Common.Behaviors;
 
@@ -27,33 +26,15 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             return await next();
         }
 
-        try
-        {
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
+        if (validationResult.IsValid)
+        {
             return await next();
         }
-        catch (ValidationException ex)
-        {
-            return TryCreateResponseFromErrors(ex.Errors.ToList(), out var response)
+
+        return ErrorHelper.TryCreateResponseFromErrors<TResponse>(validationResult.Errors.ToList(), out var response)
             ? response
-            : throw new ValidationException(ex.Errors);
-        }
-    }
-
-    private static bool TryCreateResponseFromErrors(List<ValidationFailure> validationFailures, out TResponse response)
-    {
-        List<Error> errors = validationFailures.ConvertAll(x => Error.Validation(
-                code: x.PropertyName,
-                description: x.ErrorMessage));
-
-        response = (TResponse?)typeof(TResponse)
-            .GetMethod(
-                name: nameof(ErrorOr<object>.From),
-                bindingAttr: BindingFlags.Static | BindingFlags.Public,
-                types: new[] { typeof(List<Error>) })?
-            .Invoke(null, new[] { errors })!;
-
-        return response is not null;
+            : throw new ValidationException(validationResult.Errors);
     }
 }

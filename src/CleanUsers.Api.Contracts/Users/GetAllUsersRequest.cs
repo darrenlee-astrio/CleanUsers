@@ -2,9 +2,15 @@
 
 namespace CleanUsers.Api.Contracts.Users;
 
-public record GetAllUsersRequest(
-    string? Username,
-    string? Name,
-    UserType? UserType,
-    DateTime? DateJoined,
-    string? SortBy) : PagedRequest, ISortableRequest;
+public class GetAllUsersRequest : PagedRequest, ISortableRequest
+{
+    public string? Username { get; init; }
+    public string? Name { get; init; }
+    public UserType? UserType { get; init; }
+    public DateTime? DateJoined { get; init; }
+    public string? SortBy { get; init; }
+
+    public GetAllUsersRequest()
+    {
+    }
+}

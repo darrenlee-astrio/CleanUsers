@@ -1,5 +1,7 @@
 ﻿namespace CleanUsers.Api.Contracts.Common;
 
-public record PagedRequest(
-    int Page = 1,
-    int PageSize = 10);
+public abstract class PagedRequest
+{
+    public int Page { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
+}

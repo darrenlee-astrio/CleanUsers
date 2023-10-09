@@ -56,7 +56,7 @@ public class UsersRepository : IUsersRepository
             options.SortField.Equals("DateJoined", StringComparison.OrdinalIgnoreCase) ?
             "DateJoined" : null;
 
-        users = sortField is null ? users :
+        users = sortField is null ? users.OrderBy(u => u.Name) :
             options.SortOrder == Application.Common.Enums.SortOrder.Descending ?
                 users.OrderByDescending(u => EF.Property<object>(u, sortField)) :
                 users.OrderBy(u => EF.Property<object>(u, sortField));
