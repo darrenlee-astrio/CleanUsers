@@ -26,12 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UsersController\" />
+    <ProjectReference Include="..\..\src\CleanUsers.Api.Contracts\CleanUsers.Api.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\CleanUsers.Api\CleanUsers.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CleanUsers.Api.Contracts\CleanUsers.Api.Contracts.csproj" />
-    <ProjectReference Include="..\..\src\CleanUsers.Api\CleanUsers.Api.csproj" />
+    <Folder Include="Common\Constants\" />
   </ItemGroup>
 
 </Project>

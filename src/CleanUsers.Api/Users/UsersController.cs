@@ -1,6 +1,8 @@
 ﻿using CleanUsers.Api.Common.Constants;
 using CleanUsers.Api.Common.Controllers;
+using CleanUsers.Api.Contracts.Common;
 using CleanUsers.Api.Contracts.Users;
+using CleanUsers.Application.Users.Commands.DeleteUser;
 using CleanUsers.Application.Users.Queries.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +29,14 @@ public class UsersController : ApiController
         var command = new GetUserQuery(id);
         var result = await _mediator.Send(command);
 
-        return result.Match(Ok, Problem);
+        return result.Match(
+            user => Ok(user.ToResponse()),
+            Problem);
     }
 
     [HttpGet(ApiEndpoints.Users.GetAll)]
-    [SwaggerOperation("Gets all users")]
-    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(UsersResponse))]
+    [SwaggerOperation("Gets all users with optional filtering, sorting and pagination")]
+    [SwaggerResponse(StatusCodes.Status200OK, type: typeof(PaginatedResponse<UserResponse>))]
     public async Task<IActionResult> GetAll([FromQuery] GetAllUsersRequest request, CancellationToken cancellationToken = default)
     {
         DomainUserType? userType = null;
@@ -46,7 +50,9 @@ public class UsersController : ApiController
         var command = request.ToCommand(userType);
         var result = await _mediator.Send(command);
 
-        return result.Match(Ok, Problem);
+        return result.Match(
+            users => Ok(users.ToResponse()),
+            Problem);
     }
 
     [HttpPost(ApiEndpoints.Users.Create)]
@@ -73,11 +79,16 @@ public class UsersController : ApiController
     }
 
     [HttpDelete(ApiEndpoints.Users.Delete)]
-    [SwaggerOperation("Deletes a user")]
-    [SwaggerResponse(StatusCodes.Status200OK)]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, type: typeof(ValidationProblemDetails))]
-    public IActionResult Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    [SwaggerOperation("Deletes a user by id")]
+    [SwaggerResponse(StatusCodes.Status204NoContent)]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        return Ok();
+        var command = new DeleteUserCommand(id);
+
+        var result = await _mediator.Send(command);
+        return result.Match(
+            _ => NoContent(),
+            Problem);
     }
 }

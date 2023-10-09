@@ -1,7 +1,9 @@
-﻿using CleanUsers.Api.Contracts.Users;
+﻿using CleanUsers.Api.Contracts.Common;
+using CleanUsers.Api.Contracts.Users;
 using CleanUsers.Application.Common.Enums;
 using CleanUsers.Application.Users.Commands.CreateUser;
 using CleanUsers.Application.Users.Queries.GetAllUsers;
+using CleanUsers.Domain.Common.Models;
 using ContractUserType = CleanUsers.Api.Contracts.Users.UserType;
 using DomainUser = CleanUsers.Domain.Users.User;
 using DomainUserType = CleanUsers.Domain.Users.UserType;
@@ -38,14 +40,26 @@ public static class UsersContractMapping
 
     public static UserResponse ToResponse(this DomainUser user)
     {
-        return new UserResponse(
-            Id: user.Id,
-            Username: user.Username,
-            Name: user.Name,
-            Email: user.Email,
-            Phone: user.Phone,
-            UserType: user.UserType.ToResponse(),
-            DateJoined: user.DateJoined);
+        return new UserResponse
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Name = user.Name,
+            Email = user.Email,
+            Phone = user.Phone,
+            UserType = user.UserType.ToResponse(),
+            DateJoined = user.DateJoined
+        };
+    }
+
+    public static PaginatedResponse<UserResponse> ToResponse(this PaginatedList<DomainUser> users)
+    {
+        return new PaginatedResponse<UserResponse>
+        {
+            PageIndex = users.PageIndex,
+            TotalPages = users.TotalPages,
+            Items = users.Items.ConvertAll(user => user.ToResponse())
+        };
     }
 
     private static ContractUserType ToResponse(this DomainUserType userType)
