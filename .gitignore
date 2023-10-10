@@ -366,3 +366,4 @@ FodyWeavers.xsd
 *.db-shm
 *.db-wal
 *.pptx
+/src/CleanUsers.Api/appsettings.Development.json
